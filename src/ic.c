@@ -2098,6 +2098,21 @@ nabi_ic_process_keyevent(NabiIC* ic, KeySym keysym, unsigned int state)
     }
 
     keysym = nabi_ic_normalize_keysym(ic, keysym, state);
+    
+    if (keysym == XK_space) {
+	hangul_ic_process(ic->hic, XK_exclam);
+	char *str = nabi_ic_get_hic_commit_string(ic);
+	int n = strlen(str);
+	str[n-1]=' ';
+	if (str != NULL && strlen(str) > 0)
+	    nabi_ic_commit_utf8(ic, str);
+	nabi_ic_preedit_update(ic);
+
+	if (nabi_server->hanja_mode) {
+	    nabi_ic_update_candidate_window(ic);
+	}
+	return true;
+    } 
     if (keysym >= XK_exclam && keysym <= XK_asciitilde) {
 	ret = hangul_ic_process(ic->hic, keysym);
 
